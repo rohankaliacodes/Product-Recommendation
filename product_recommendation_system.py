@@ -38,3 +38,16 @@ def recommend_products(aggregated_profiles, customer_profiles, customer_name, to
     for index, row in recommendations.iterrows():
         formatted_recommendations += f"- {row['Category']} > {row['Sub Category']} (recommended based on {row['Counts']} similar purchases)\n"
     return f"Based on your purchase history and similar customers' preferences, we recommend the following products:\n{formatted_recommendations}"
+
+file_path = 'grocery_sells.csv'
+grocery_data = load_data(file_path)
+if isinstance(grocery_data, pd.DataFrame):
+    aggregated_profiles, customer_profiles = preprocess_data(grocery_data)
+    if isinstance(aggregated_profiles, pd.DataFrame):
+        test_customer = aggregated_profiles['Customer Name'][0]
+        print(recommend_products(aggregated_profiles, customer_profiles, test_customer))
+    else:
+        print(aggregated_profiles)
+else:
+    print(grocery_data)
+
