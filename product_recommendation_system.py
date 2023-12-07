@@ -1,17 +1,31 @@
 # Importing necessary libraries
 import pandas as pd  # For data manipulation and analysis
+import sys
+import os
 from sklearn.feature_extraction.text import CountVectorizer  # For converting text data into a matrix of token counts
 from sklearn.metrics.pairwise import cosine_similarity  # For calculating similarity between vectors
 
+# This function determines whether we're running as an executable (frozen) or as a script
+def get_base_dir():
+    if getattr(sys, 'frozen', False):
+        # If the application is run as a bundle, the pyInstaller bootloader
+        # extends the sys module by a flag frozen=True and sets the app 
+        # path into variable _MEIPASS'.
+        return sys._MEIPASS
+    else:
+        return os.path.dirname(__file__)
+
 # Function to load data from a CSV file
-def load_data(file_path):
+def load_data(file_name):
+    base_dir = get_base_dir()
+    file_path = os.path.join(base_dir, file_name)
     try:
         # Attempt to read the CSV file into a DataFrame
         data = pd.read_csv(file_path)
         return data
     except FileNotFoundError:
         # If the file is not found, return an error message
-        return "File not found. Please check the file path."
+        return f"File not found at {file_path}. Please check the file path."
 
 # Function to validate and preprocess the input data
 def preprocess_data(grocery_data):
@@ -79,10 +93,10 @@ def recommend_products(aggregated_profiles, customer_profiles, customer_name, to
     return f"Based on your purchase history and similar customers' preferences, we recommend the following products:\n{formatted_recommendations}"
 
 # Main execution example
-# Set the file path for the CSV data
-file_path = 'grocery_sells.csv'
+# Set the file name for the CSV data
+file_name = 'grocery_sells.csv'
 # Load the data using the load_data function
-grocery_data = load_data(file_path)
+grocery_data = load_data(file_name)
 # Check if the data was loaded successfully as a DataFrame
 if isinstance(grocery_data, pd.DataFrame):
     # Preprocess the data to create customer profiles
